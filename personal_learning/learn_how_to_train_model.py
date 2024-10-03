@@ -68,11 +68,11 @@ print(theta_final)
 predictions = model(X, theta_final)
 
 print(coef_determination(y, predictions))
-# plt.plot(x, predictions, c='r')
+plt.plot(x, predictions, c='r')
 
-# plt.plot(x, model(X=X, theta=theta), c='g')
+plt.plot(x, model(X=X, theta=theta), c='g')
 
-plt.plot(range(100), cost_history)
+# plt.plot(range(100), cost_history)
 
 plt.show()
 # print(dataset)
