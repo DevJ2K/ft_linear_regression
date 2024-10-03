@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # with open('data.csv') as csvfile: #Dimensions = 24 * 2
 # 	reader = csv.DictReader(csvfile)
-# 	dataset = [(row['km'], row['price']) for row in reader]
+# 	dataset = [(int(row['km']), int(row['price'])) for row in reader]
 
 
 # y=3.7x+8
@@ -43,22 +43,33 @@ def grad_0(theta: list[float]):
 def grad_1(theta: list[float]) -> float:
 	total_cost = 0
 	for i in range(len(dataset)):
-		total_cost += (((estimatePrice(dataset[i][0], theta) - dataset[i][1]) ** 2) * dataset[i][0])
+		total_cost += (((estimatePrice(dataset[i][0], theta) - dataset[i][1]) * dataset[i][0]) ** 2)
 	return total_cost * (1 / 2 * len(dataset))
 
 # GRADIENT DESCENT ALGORITHM
 def gradient_descent(theta: list[float], learningRate: float, n_iterations: int):
-	print(theta)
+	# print(theta)
 	for _ in range(n_iterations):
 		tmp_theta = [theta[0], theta[1]]
-		theta[0] = theta[0] - learningRate * grad_0(theta=tmp_theta)
-		theta[1] = theta[1] - learningRate * grad_1(theta=tmp_theta)
+		print(f"BEFORE GRAD : {tmp_theta}")
+		# print(grad_0(theta=tmp_theta))
+		print(f"{cost_theta_0(theta=tmp_theta)} - {cost_theta_1(theta=tmp_theta)}")
+		theta[0] = theta[0] - (learningRate if cost_theta_0(theta=tmp_theta) > 0 else learningRate * (-1))
+		theta[1] = theta[1] - (learningRate if cost_theta_1(theta=tmp_theta) > 0 else learningRate * (-1))
+
+		# theta[0] = theta[0] - (learningRate * cost_theta_0(theta=tmp_theta))
+		# theta[1] = theta[1] - (learningRate * cost_theta_1(theta=tmp_theta))
+		# theta[0] = (learningRate * cost_theta_0(theta=tmp_theta))
+		# theta[1] = (learningRate * cost_theta_1(theta=tmp_theta))
+		print(f"AFTER GRAD : {tmp_theta}")
+		print()
+		# theta[1] = theta[1] - learningRate * grad_1(theta=tmp_theta)
 	print(theta)
 	return theta
 
 # print(cost_theta_0(theta=[8, 3.7]))
 # print(cost_theta_1(theta=[8, 3.7]))
-new_theta = gradient_descent(theta, 0.1, 100)
+new_theta = gradient_descent(theta, 0.05, 300)
 
 # VISUALIZE DATA
 # x, y = dataset
