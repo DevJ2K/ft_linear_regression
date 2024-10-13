@@ -50,7 +50,7 @@ def grad_1(theta: list[float]) -> float:
 def gradient_descent(theta: list[float], learningRate: float, n_iterations: int):
 	# print(theta)
 	for _ in range(n_iterations):
-		tmp_theta = (theta[0], theta[1])
+		tmp_theta = [theta[0], theta[1]]
 		print(f"BEFORE GRAD : {tmp_theta}")
 		# print(grad_0(theta=tmp_theta))
 		# print(f"{cost_theta_0(theta=tmp_theta)} - {cost_theta_1(theta=tmp_theta)}")
@@ -69,7 +69,10 @@ def gradient_descent(theta: list[float], learningRate: float, n_iterations: int)
 
 # print(cost_theta_0(theta=[8, 3.7]))
 # print(cost_theta_1(theta=[8, 3.7]))
-new_theta = gradient_descent(theta, 0.05, 300)
+# new_theta = gradient_descent(theta, 0.05, 300)
+
+# new_theta = [0.0, 0.0]
+new_theta = [8.0, 3.7]
 
 # VISUALIZE DATA
 # x, y = dataset
@@ -81,11 +84,11 @@ plt.plot(
 )
 
 plt.scatter(*zip(*dataset))
-plt.plot(
-	[pair[0] for pair in dataset],
-	[ estimatePrice(mileage=dataset[i][0], theta=[0, 0]) for i in range(len(dataset))],
-	c='r'
-)
+# plt.plot(
+# 	[pair[0] for pair in dataset],
+# 	[ estimatePrice(mileage=dataset[i][0], theta=[0, 0]) for i in range(len(dataset))],
+# 	c='r'
+# )
 
 plt.show()
 
