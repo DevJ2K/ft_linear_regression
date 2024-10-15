@@ -9,12 +9,12 @@ B = np.ones(A.shape)
 
 print(f"Matrices :\n{A}")
 print(f"Dimensions (m x n) : {A.shape}")
-print(f"Dimensions (m x n) : {A.T.shape}")
+print(f"Dimensions Transposé (m x n) : {A.T.shape}")
 
 
 print(f"Matrices :\n{B}")
 print(f"Dimensions (m x n) : {B.shape}")
-print(f"Dimensions (m x n) : {B.T.shape}")
+print(f"Dimensions Transposé (m x n) : {B.T.shape}")
 
 print(f"Somme Matrices A + B :\n{A + B}")
 

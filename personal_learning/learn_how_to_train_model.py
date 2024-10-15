@@ -45,6 +45,11 @@ def coef_determination(y, pred):
 	return (1 - u/v)
 
 x, y = make_regression(n_samples=100, n_features=1, noise=10)
+print("X :")
+print(x)
+print("Y :")
+print(y)
+
 y = y.reshape(y.shape[0], 1)
 plt.scatter(x, y)
 
