@@ -51,6 +51,8 @@ print("Y :")
 print(y)
 
 y = y.reshape(y.shape[0], 1)
+print("Y after reshape :")
+print(y)
 plt.scatter(x, y)
 
 print(x.shape)
