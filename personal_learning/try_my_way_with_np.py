@@ -42,7 +42,7 @@ def model(X: np.ndarray, theta: np.ndarray) -> np.ndarray:
 
 def cost_function(X: np.ndarray, y: np.ndarray, theta: np.ndarray) -> np.ndarray:
 	m = y.shape[0]
-	return 1/(m) * np.sum((model(X, theta) - y) ** 2)
+	return 1/(2 * m) * np.sum((model(X, theta) - y) ** 2)
 
 
 # Derive de Theta
@@ -58,7 +58,7 @@ def gradient(X: np.ndarray, y: np.ndarray, theta: np.ndarray) -> np.ndarray:
 	# print(X.T.dot(model(X, theta) - y) * 1/m)
 	# print(f"TRY GRAD WITH :\n {theta}")
 	# print(X.T.dot(model(X, theta) - y) * 1/m * 0.01)
-	return 1/m * X.T.dot(model(X, theta) - y)
+	return 1/(m) * X.T.dot(model(X, theta) - y)
 	pass
 
 def gradient_descent(X: np.ndarray, y: np.ndarray, theta: np.ndarray, n_iterations: int, learningRate: float) -> tuple[np.ndarray, np.ndarray]:
@@ -71,18 +71,30 @@ def gradient_descent(X: np.ndarray, y: np.ndarray, theta: np.ndarray, n_iteratio
 		# 	break
 	return (theta, cost_history)
 
+
+def coef_determination(y: np.ndarray, pred: np.ndarray):
+	u = ((y - pred)**2).sum()
+	v = ((y - y.mean())**2).sum()
+	return 1 - (u/v)
+
+
+
 # print("=" * 20)
 # (gradient(X, y_matrix, theta))
 # theta = np.array([8., 20.]).reshape(2, 1)
 # (gradient(X, y_matrix, theta))
 
-n_iterations = 1000
+n_iterations = 5000
 
 final_theta, cost_history = gradient_descent(X=X, y=y_matrix, theta=theta, n_iterations=n_iterations, learningRate=0.005)
+
+predictions = model(X, final_theta)
 
 print("============")
 print(f"Default theta :\n{theta}")
 print(f"Final theta :\n{final_theta}")
+
+print(coef_determination(y_matrix, predictions))
 
 
 f, (axis1, axis2) = plt.subplots(1, 2) #, sharey=True
