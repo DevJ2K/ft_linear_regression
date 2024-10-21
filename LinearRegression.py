@@ -1,7 +1,7 @@
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
+from Normalization import Normalization
 
 class DataError(Exception):
 	pass
@@ -25,13 +25,12 @@ class LinearRegression:
 	# axis[1, 1].plot(X, Y4)
 	# axis[1, 1].set_title("Tanh Function")
 
-
-
 	def __init__(self, file: str):
 
+		# np.set_printoptions(suppress=True)
 		# Matplotlib
 		# self.fig, self.axis = plt.subplots(2, 2)
-		self.fig, self.axis = plt.subplots(2, 1)
+		self.fig, self.axis = plt.subplots(3, 1)
 		self.fig.canvas.manager.set_window_title("Linear Regression")
 
 		self.cost_history = []
@@ -47,16 +46,17 @@ class LinearRegression:
 		self.x_data = self.data[:,0].reshape(-1, 1)
 		self.y_data = self.data[:,1].reshape(-1, 1)
 
+		normalize_x_data = Normalization(self.x_data)
+		normalize_y_data = Normalization(self.y_data)
+		# self.x_data = normalize_x_data.standardize_all()
+		# self.y_data = normalize_y_data.standardize_all()
 
-		scaler_x = StandardScaler()
-		scaler_y = StandardScaler()
+		self.x_standardized = normalize_x_data.standardize_all()
+		# self.y_standardized = normalize_y_data.standardize_all()
+		self.X = np.hstack((self.x_standardized, np.ones((self.x_data.shape[0], 1))))
 
-		# self.x_data = scaler_x.fit_transform(self.x_data)
-		# self.y_data = scaler_y.fit_transform(self.y_data)
+		# self.X = np.hstack((self.x_data, np.ones((self.x_data.shape[0], 1))))
 
-		self.X = np.hstack((scaler_x.fit_transform(self.x_data), np.ones((self.x_data.shape[0], 1))))
-
-		# PERFECT THETA MANO
 		# self.theta = np.array([-0.025, 9000]).reshape(2, 1)
 		self.theta = np.zeros((2, 1))
 
@@ -106,97 +106,82 @@ class LinearRegression:
 			np.ndarray: Shape (2 x 1)
 		"""
 		m = X.shape[0]
-		# np.set_printoptions(suppress=True)
-		# print(X.T)
-		# print(X.T.shape)
-		# print(self.__model(self.X, self.theta).shape)
-		# print(((1/m) * X.T.dot(self.__model(self.X, self.theta) - y)) * 0.0000005 )
-
-
-		# print("Theta")
-		# print(self.theta)
-		# print("X")
-		# print(self.X)
-		# print("Model")
-		# print(self.__model(self.X, self.theta))
-		# print("Model - Y")
-		# print(self.__model(X, theta) - y)
-		# print((1/m) * np.sum(self.__model(X, theta) - y))
-		# np.set_printoptions(suppress=True)
-
-		# print(X.T)
-		# print((1/m) * X.T.dot(self.__model(X, theta) - y))
-
-
 		return (1/m) * X.T.dot(self.__model(X, theta) - y)
 
 	def __gradient_descent(self, X: np.ndarray, y: np.ndarray, theta: np.ndarray, n_iteration: int, learning_rate: float):
 		self.cost_history = np.zeros(n_iteration)
+		self.coef_determination_history = np.zeros(n_iteration)
 
-		self.__gradient(X, y, theta)
-		# np.set_printoptions(suppress=True)
-		# np.set_printoptions(suppress=True, precision=2, floatmode='fixed')
-		# print(learning_rate * self.__gradient(X, y, theta))
 		for i in range(n_iteration):
 			theta = theta - learning_rate * self.__gradient(X, y, theta)
 			self.cost_history[i] = self.__cost_function(X, y, theta)
+			self.coef_determination_history[i] = self.__coef_determination(y, self.__model(X, theta))
 		self.theta = theta
-		# self.theta = np.array([-0.025, 9000]).reshape(2, 1)
 
 
-	def train_model(self):
-		# self.__model(self.X, self.theta)
-		# self.__cost_function(self.X, self.y_data, self.theta)
-		# self.__gradient(self.X, self.y_data, self.theta)
-		np.set_printoptions(suppress=True)
-		self.__gradient_descent(self.X, self.y_data, self.theta, 1000, 0.01)
+	def __coef_determination(self, y: np.ndarray, pred: np.ndarray):
+		u = ((y - pred) ** 2).sum()
+		v = ((y - y.mean()) ** 2).sum()
+		return (1 - u/v)
 
-		# print("Theta")
-		# print(self.theta)
-		# print("X")
-		# print(self.X)
-		# print("Model")
-		# print(self.__model(self.X, self.theta))
-		# print("Model - Y")
-		# print(self.y_data)
-		pass
+
+	def train_model(self, iterations: int = 1000, learningRate: float = 0.005):
+		self.__gradient_descent(self.X, self.y_data, self.theta, iterations, learningRate)
+		self.__plot_data(iterations=iterations)
+
+		print(self.__coef_determination(self.y_data, self.__model(self.X, self.theta)))
+		plt.show()
 
 	def use_model(self, mileage: int) -> float:
+		# LOAD LE MODEL
 		pass
+		# if (mileage < 0):
+		# 	raise DataError("Mileage cannot be less than 0.")
 
-	def __plot_data(self):
+
+	def __plot_data(self, iterations: int):
 		# font_axis = {'family':'poppins','color':'#000494','size':12}
 		font_axis = {'color':'#000494','size':12}
-		# self.axis[0, 0].scatter(self.data[:,0], self.data[:,1])
-		self.axis[0].scatter(self.x_data, self.y_data)
-		self.axis[0].set_xlabel("Mileage (km)", fontdict=font_axis)
-		self.axis[0].set_ylabel("Price (€)", fontdict=font_axis)
 
-		self.axis[1].scatter(self.x_data, self.y_data)
-		self.axis[1].set_xlabel("Mileage (km)", fontdict=font_axis)
-		self.axis[1].set_ylabel("Price (€)", fontdict=font_axis)
+		(axis_model, axis_cost, axis_precision) = self.axis
 
+
+		axis_cost.plot(range(iterations), self.cost_history)
+		# axis_cost.set_xlabel("Mileage (km)", fontdict=font_axis)
+		# axis_cost.set_ylabel("Price (€)", fontdict=font_axis)
+
+		axis_model.scatter(self.x_data, self.y_data)
+		axis_model.plot(self.x_data, self.__model(self.X, self.theta), c='r')
+		axis_model.set_xlabel("Mileage (km)", fontdict=font_axis)
+		axis_model.set_ylabel("Price (€)", fontdict=font_axis)
+
+
+		axis_precision.plot(range(iterations), self.coef_determination_history)
+		# plt.scatter(self.x_data, )
 		# default_theta = np.zeros((2, 1))
-		# plt.plot(self.X, self.__model(self.X, default_theta), c='y')
-		self.axis[1].plot(self.x_data, self.__model(self.X, self.theta), c='r')
+		# axis_model.plot(self.x_data, self.__model(self.X, default_theta), c='y')
+
+		# self.axis[1].legend([None, 'First List', 'Second List'], loc='upper left')
 
 		# plt.plot(self.x_data, self.__model(self.X, self.y_data, self.theta), c='r')
 		# plt.tick_params(axis='x', which='major', labelsize=9)
 		# plt.xticks(self.x_data, [str(i) for i in self.x_data], rotation=70)
 
-		# plt.tight_layout()
+		plt.tight_layout()
 		# self.axis[0, 0].set_title("Data")
 
 
-	def show(self):
-		self.__plot_data()
-		plt.show()
+	# def __show(self):
+	# 	self.__plot_data()
+	# 	# print(self.__coef_determination(self.y_data, self.__model(self.X, self.theta)))
+	# 	# print(self.theta)
+	# 	plt.show()
 
 if __name__ == "__main__":
 	try:
 		linearRegression = LinearRegression("data.csv")
-		linearRegression.train_model()
-		linearRegression.show()
+		linearRegression.train_model(iterations=1500, learningRate=0.005)
+		# linearRegression.show()
 	except Exception as e:
 		print("Not able to perform linear regression. :")
 		print(e)
