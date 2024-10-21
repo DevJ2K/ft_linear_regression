@@ -45,22 +45,47 @@ class LinearRegression:
 
 	def __init__(self, file: str):
 
-		# _, self.axis = plt.subplots(2, 2)
+		self.fig, self.axis = plt.subplots(1, 1)
+
+		self.fig.canvas.manager.set_window_title("Linear Regression")
 
 		try:
 			with open(file) as csvfile: #Dimensions = 24 * 2
 				reader = csv.DictReader(csvfile)
-				self.data = np.array([(row['km'], row['price']) for row in reader])
+				self.data = np.array([(int(row['km']), int(row['price'])) for row in reader])
 		except:
 			raise DataError(f"Failed to initialize data from provide file '{file}'.")
 
-		print(self.data)
+		# self
+		self.x_data = self.data[:,0].reshape(-1, 1)
+		self.y_data = self.data[:,1].reshape(-1, 1)
+
+		print(self.x_data.shape[0])
+		print(self.x_data.shape)
+		self.X = np.hstack((self.x_data, np.ones((self.x_data.shape[0], 1))))
+
+		# print(self.X)
+
+		# print(self.data)
+		# print(self.data.shape)
+		# for x, y in zip(self.x, self.y):
+		# 	print(f"f({x}) = {y}")
+
 		self.__plot_data()
 
 
 	def __plot_data(self):
+		# font_axis = {'family':'poppins','color':'#000494','size':12}
+		font_axis = {'color':'#000494','size':12}
 		# self.axis[0, 0].scatter(self.data[:,0], self.data[:,1])
-		plt.scatter(self.data[:,0], self.data[:,1])
+		plt.scatter(self.x_data, self.y_data)
+		plt.xlabel("Mileage (km)", fontdict=font_axis)
+		plt.ylabel("Price (€)", fontdict=font_axis)
+
+		# plt.tick_params(axis='x', which='major', labelsize=9)
+		# plt.xticks(self.x_data, [str(i) for i in self.x_data], rotation=70)
+
+		plt.tight_layout()
 		# self.axis[0, 0].set_title("Data")
 
 
@@ -68,5 +93,9 @@ class LinearRegression:
 		plt.show()
 
 if __name__ == "__main__":
-	linearRegression = LinearRegression("data.csv")
-	linearRegression.show()
+	try:
+		linearRegression = LinearRegression("data.csv")
+		linearRegression.show()
+	except Exception as e:
+		print("Not able to perform linear regression. :")
+		print(e)
