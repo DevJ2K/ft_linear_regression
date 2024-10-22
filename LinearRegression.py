@@ -43,16 +43,19 @@ class LinearRegression:
 		except:
 			raise DataError(f"Failed to initialize data from provide file '{file}'.")
 
+		# print(self.data)
 		self.x_data = self.data[:,0].reshape(-1, 1)
 		self.y_data = self.data[:,1].reshape(-1, 1)
 
-		normalize_x_data = Normalization(self.x_data)
-		normalize_y_data = Normalization(self.y_data)
-		# self.x_data = normalize_x_data.standardize_all()
-		# self.y_data = normalize_y_data.standardize_all()
+		self.normalize_x_data = Normalization(self.x_data)
+		self.normalize_y_data = Normalization(self.y_data)
 
-		self.x_standardized = normalize_x_data.standardize_all()
-		# self.y_standardized = normalize_y_data.standardize_all()
+		self.x_standardized = self.normalize_x_data.standardize_all()
+		self.y_standardized = self.normalize_y_data.standardize_all()
+
+		self.x_data = self.x_standardized
+		self.y_data = self.y_standardized
+
 		self.X = np.hstack((self.x_standardized, np.ones((self.x_data.shape[0], 1))))
 
 		# self.X = np.hstack((self.x_data, np.ones((self.x_data.shape[0], 1))))
@@ -133,13 +136,31 @@ class LinearRegression:
 		plt.show()
 
 	def use_model(self, mileage: int) -> float:
+		if (mileage < 0):
+			raise DataError("Mileage cannot be less than 0.")
+		print("PREDICTION")
+		standardise_mileage = self.normalize_x_data.standardize(mileage)
+		print(standardise_mileage)
+		array_mileage = np.hstack(([[standardise_mileage]], np.ones((1, 1))))
+		print(array_mileage)
+		print(array_mileage.shape)
+		print(self.theta.shape)
+
+		# print(array_mileage.dot(self.theta))
+		print(self.normalize_y_data.destandardize(array_mileage.dot(self.theta)))
+		# pred = self.theta[0] * mileage + self.theta[1]
+		# print(pred)
+		# print(self.normalize_y_data.destandardize(pred))
+		# print(self.__model([240000], self.theta))
 		# LOAD LE MODEL
 		pass
-		# if (mileage < 0):
-		# 	raise DataError("Mileage cannot be less than 0.")
 
 
 	def __plot_data(self, iterations: int):
+
+		# https://matplotlib.org/stable/users/explain/animations/animations.html
+		# Implement curses animation
+
 		# font_axis = {'family':'poppins','color':'#000494','size':12}
 		font_axis = {'color':'#000494','size':12}
 
@@ -150,8 +171,25 @@ class LinearRegression:
 		# axis_cost.set_xlabel("Mileage (km)", fontdict=font_axis)
 		# axis_cost.set_ylabel("Price (€)", fontdict=font_axis)
 
-		axis_model.scatter(self.x_data, self.y_data)
-		axis_model.plot(self.x_data, self.__model(self.X, self.theta), c='r')
+
+		# self.theta = self.theta * (self.normalize_y_data.standard_deviation / self.normalize_x_data.standard_deviation)
+		# self.theta[0] = self.theta * (self.normalize_y_data.standard_deviation / self.normalize_x_data.standard_deviation)
+		# self.theta[1] = self.normalize_y_data.mean - np.sum(self.normalize_x_data.mean * self.theta)
+		# print(self.theta)
+		# self.x_data = self.normalize_x_data.destandardize_all()
+		# self.y_data = self.normalize_y_data.destandardize_all()
+
+		# self.X = np.hstack((self.x_data, np.ones((self.x_data.shape[0], 1))))
+
+		# axis_model.scatter(self.x_data, self.y_data)
+		# axis_model.plot(self.x_data, self.__model(self.X, self.theta), c='r')
+		# axis_model.set_xlabel("Mileage (km)", fontdict=font_axis)
+		# axis_model.set_ylabel("Price (€)", fontdict=font_axis)
+
+
+		axis_model.scatter( self.normalize_x_data.destandardize(self.x_data), self.normalize_y_data.destandardize(self.y_data))
+
+		axis_model.plot(self.normalize_x_data.destandardize(self.x_data), self.normalize_y_data.destandardize(self.__model(self.X, self.theta)), c='r')
 		axis_model.set_xlabel("Mileage (km)", fontdict=font_axis)
 		axis_model.set_ylabel("Price (€)", fontdict=font_axis)
 
@@ -181,6 +219,7 @@ if __name__ == "__main__":
 	try:
 		linearRegression = LinearRegression("data.csv")
 		linearRegression.train_model(iterations=1500, learningRate=0.005)
+		# linearRegression.use_model(int(input("Entrez votre kilometrage")))
 		# linearRegression.show()
 	except Exception as e:
 		print("Not able to perform linear regression. :")
