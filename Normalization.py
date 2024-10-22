@@ -9,24 +9,30 @@ class Normalization:
 	e: Standard deviation of the variable's values
 	"""
 
-	def __init__(self, X: np.ndarray):
-		self.X: np.ndarray = X
-		self.mean = X.mean()
-		self.standard_deviation = X.std()
-		print(self.mean)
-		print(self.standard_deviation)
+	def __init__(self, array: np.ndarray):
+		self.array: np.ndarray = array
+		self.mean = array.mean()
+		self.standard_deviation = array.std()
 
 	def standardize_all(self):
 
-		self.X = (self.X - self.mean) / self.standard_deviation
-		return self.X
+		self.array = (self.array - self.mean) / self.standard_deviation
+		return self.array
 
 	def destandardize_all(self):
-		self.X = self.X * self.standard_deviation + self.mean
-		return self.X #.astype(int)
+		self.array = self.array * self.standard_deviation + self.mean
+		return self.array #.astype(int)
 
 	def standardize(self, value) -> float:
 		return (value - self.mean) / self.standard_deviation
 
 	def destandardize(self, value) -> float:
 		return value * self.standard_deviation + self.mean
+
+if __name__ == "__main__":
+	array = np.array([[1], [2], [3], [4], [5]]).reshape(-1, 1)
+	print(array)
+	print(array.shape)
+	array_normalization = Normalization(array)
+	print(array_normalization.standardize_all())
+	print(array_normalization.destandardize_all())
