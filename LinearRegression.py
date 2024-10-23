@@ -62,7 +62,9 @@ class LinearRegression:
 		self.axis_model.clear()
 
 		self.axis_model.scatter(self.x_data, self.y_data, c=plot_info['data_color'])
-		self.axis_model.set_ylim([self.y_data.min() - 200, self.y_data.max() + 200])
+		self.axis_model.get_ylim()
+		# self.axis_model.set_ylim([self.y_data.min(), self.y_data.max()])
+		self.axis_model.set_ylim(self.axis_model.get_ylim())
 
 		self.axis_model.plot(self.x_data, self.normalize_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
 
@@ -94,16 +96,23 @@ class LinearRegression:
 
 
 	def train_model(self,
-				file: str,
+				file_info: dict,
 				iterations: int = 1000,
 			learningRate: float = 0.01,
 			animate: bool = False
 			):
 
 		try:
+			file = file_info['filename']
+			x_type = file_info['x_type']
+			y_type = file_info['y_type']
+			x_name = file_info['x_name']
+			y_name = file_info['y_name']
+			file = file_info['filename']
+			file = file_info['filename']
 			with open(file) as csvfile:
 				reader = csv.DictReader(csvfile)
-				self.data = np.array([(float(row['km']), float(row['price'])) for row in reader])
+				self.data = np.array([(x_type(row[x_name]), y_type(row[y_name])) for row in reader])
 		except:
 			raise DataError(f"Failed to initialize data from provide file '{file}'.")
 
@@ -219,8 +228,22 @@ class LinearRegression:
 
 if __name__ == "__main__":
 	try:
+		file_info = {
+			'filename': 'data.csv',
+			'x_name': 'km',
+			'x_type': int,
+			'y_name': 'price',
+			'y_type': int,
+		}
+		# file_info = {
+		# 	'filename': 'perfect_data.csv',
+		# 	'x_name': 'x',
+		# 	'x_type': int,
+		# 	'y_name': 'y',
+		# 	'y_type': float,
+		# }
 		linearRegression = LinearRegression()
-		linearRegression.train_model(file="data.csv", iterations=1000, learningRate=0.01, animate=True)
+		linearRegression.train_model(file_info=file_info, iterations=1000, learningRate=0.01, animate=False)
 		# linearRegression.use_model(int(input("Entrez votre kilometrage")))
 		# linearRegression.show()
 	except Exception as e:
