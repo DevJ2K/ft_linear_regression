@@ -1,5 +1,11 @@
 import numpy as np
 
+def standardize(mean, standard_deviation, value) -> float:
+	return (value - mean) / standard_deviation
+
+def destandardize(mean, standard_deviation, value) -> float:
+	return value * standard_deviation + mean
+
 class Normalization:
 	"""
 	X_standardize = (X - μ)/e
@@ -24,10 +30,10 @@ class Normalization:
 		return self.array #.astype(int)
 
 	def standardize(self, value) -> float:
-		return (value - self.mean) / self.standard_deviation
+		return standardize(self.mean, self.standard_deviation, value)
 
 	def destandardize(self, value) -> float:
-		return value * self.standard_deviation + self.mean
+		return destandardize(self.mean, self.standard_deviation, value)
 
 if __name__ == "__main__":
 	array = np.array([[1], [2], [3], [4], [5]]).reshape(-1, 1)
