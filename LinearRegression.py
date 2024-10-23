@@ -3,6 +3,9 @@ import csv
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from Normalization import Normalization
+import typer
+import time
+import json
 
 class DataError(Exception):
 	pass
@@ -45,10 +48,14 @@ class LinearRegression:
 		self.cost_history = np.zeros(n_iteration)
 		self.coef_determination_history = np.zeros(n_iteration)
 
+		# with typer.progressbar(range(n_iteration)) as progress:
+			# for i in progress:
 		for i in range(n_iteration):
 			theta = theta - learning_rate * self.__gradient(X, y, theta)
 			self.cost_history[i] = self.__cost_function(X, y, theta)
 			self.coef_determination_history[i] = self.__coef_determination(y, self.__model(X, theta))
+				# time.sleep(0.001)
+
 		self.theta = theta
 
 
@@ -94,6 +101,38 @@ class LinearRegression:
 		v = ((y - y.mean()) ** 2).sum()
 		return (1 - u/v)
 
+	def __save_model(self):
+		file = "model.json"
+		data = {
+			"precision": None if self.n_iterations <= 0 else self.coef_determination_history[-1],
+			"iteration": self.n_iterations,
+			"learning_rate": self.learning_rate,
+			"theta": None,
+			"mean_x": self.normalize_x_data.mean,
+			"mean_y": self.normalize_y_data.mean,
+			"standard_deviation_x": self.normalize_x_data.standard_deviation,
+			"standard_deviation_y": self.normalize_y_data.standard_deviation,
+		}
+		try:
+			with open(file, 'w') as json_file:
+				json.dump(data, json_file, indent=4)
+				# EXCEPT
+				"""
+				{
+					"accuracy": 0.99,
+					"iteration": 1000,
+					"learning_rate": 0.005,
+					"theta": [0.0, 0.0],
+					"mean_x": 13241,
+					"standard_deviation_x": 436536,
+					"mean_y": 13241,
+					"standard_deviation_y": 436536
+				}
+				"""
+
+		except:
+			print(f"Cannot save the model in {file}")
+			return
 
 	def train_model(self,
 				file_info: dict,
@@ -101,7 +140,9 @@ class LinearRegression:
 			learningRate: float = 0.01,
 			animate: bool = False
 			):
-
+		if (iterations <= 0):
+			print("Iterations cannot be minus or equal 0")
+			return
 		try:
 			file = file_info['filename']
 			x_type = file_info['x_type']
@@ -117,6 +158,7 @@ class LinearRegression:
 			raise DataError(f"Failed to initialize data from provide file '{file}'.")
 
 		self.learning_rate = learningRate
+		self.n_iterations = iterations
 
 		# We don't standardise this data.
 		self.x_data = self.data[:,0].reshape(-1, 1)
@@ -138,10 +180,12 @@ class LinearRegression:
 
 		# print(self.__coef_determination(self.y_data, self.__model(self.X, self.theta)))
 		if (animate == True):
+			print("That display only the model with animating but not saving because is not optimal.")
 			self.__animate_gradient_descent(iterations)
 		else:
 			self.__gradient_descent(self.X, self.y_standardized, self.theta, iterations, learningRate)
 			self.__plot_data(iterations=iterations)
+			self.__save_model()
 
 	def use_model(self, mileage) -> float:
 		if (mileage < 0):
