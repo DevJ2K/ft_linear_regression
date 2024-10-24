@@ -1,0 +1,10 @@
+{
+    "precision": 0.7329747064654101,
+    "iteration": 1000,
+    "learning_rate": 0.01,
+    "theta": null,
+    "mean_x": 101066.25,
+    "mean_y": 6331.833333333333,
+    "standard_deviation_x": 51565.1899106445,
+    "standard_deviation_y": 1291.8688873961714
+}

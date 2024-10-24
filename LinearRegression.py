@@ -6,6 +6,7 @@ from Normalization import Normalization
 import typer
 import time
 import json
+import os
 
 class DataError(Exception):
 	pass
@@ -13,6 +14,12 @@ class DataError(Exception):
 class LinearRegression:
 
 	def __init__(self):
+		ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+		print(ROOT_PATH)
+
+		self.MODELS_PATH = os.path.join(ROOT_PATH, "models")
+		self.DATAS_PATH = os.path.join(ROOT_PATH, "datas")
+
 		self.plot_info = {
 			'window_title': 'Linear Regression',
 			'window_bg': '#d1d2ff',
@@ -102,9 +109,13 @@ class LinearRegression:
 		return (1 - u/v)
 
 	def __save_model(self):
-		file = "model.json"
+		try:
+			file = str(self.file_info["model_file"])
+		except:
+			file = "model_" + self.file_info["filename"]
+
 		data = {
-			"precision": None if self.n_iterations <= 0 else self.coef_determination_history[-1],
+			"precision": self.coef_determination_history[-1],
 			"iteration": self.n_iterations,
 			"learning_rate": self.learning_rate,
 			"theta": None,
@@ -114,29 +125,15 @@ class LinearRegression:
 			"standard_deviation_y": self.normalize_y_data.standard_deviation,
 		}
 		try:
-			with open(file, 'w') as json_file:
+			with open(os.path.join(self.MODELS_PATH, file), 'w') as json_file:
 				json.dump(data, json_file, indent=4)
-				# EXCEPT
-				"""
-				{
-					"accuracy": 0.99,
-					"iteration": 1000,
-					"learning_rate": 0.005,
-					"theta": [0.0, 0.0],
-					"mean_x": 13241,
-					"standard_deviation_x": 436536,
-					"mean_y": 13241,
-					"standard_deviation_y": 436536
-				}
-				"""
-
 		except:
 			print(f"Cannot save the model in {file}")
 			return
 
 	def train_model(self,
-				file_info: dict,
-				iterations: int = 1000,
+			config_file: str,
+			iterations: int = 1000,
 			learningRate: float = 0.01,
 			animate: bool = False
 			):
@@ -144,18 +141,20 @@ class LinearRegression:
 			print("Iterations cannot be minus or equal 0")
 			return
 		try:
-			file = file_info['filename']
-			x_type = file_info['x_type']
-			y_type = file_info['y_type']
-			x_name = file_info['x_name']
-			y_name = file_info['y_name']
-			file = file_info['filename']
-			file = file_info['filename']
-			with open(file) as csvfile:
+			print(os.path.join(self.DATAS_PATH, "configs", config_file))
+			with open(os.path.join(self.DATAS_PATH, "configs", config_file)) as json_file:
+				self.file_info = json.load(json_file)
+				self.file_info['filename'] = config_file
+
+			file = self.file_info['datafile']
+			x_type = eval(self.file_info['x_type'])
+			y_type = eval(self.file_info['y_type'])
+
+			with open(os.path.join(self.DATAS_PATH, "sets", file)) as csvfile:
 				reader = csv.DictReader(csvfile)
-				self.data = np.array([(x_type(row[x_name]), y_type(row[y_name])) for row in reader])
+				self.data = np.array([(x_type(row[reader.fieldnames[0]]), y_type(row[reader.fieldnames[1]])) for row in reader])
 		except:
-			raise DataError(f"Failed to initialize data from provide file '{file}'.")
+			raise DataError(f"Failed to initialize data from provide file '{config_file}'.")
 
 		self.learning_rate = learningRate
 		self.n_iterations = iterations
@@ -184,8 +183,8 @@ class LinearRegression:
 			self.__animate_gradient_descent(iterations)
 		else:
 			self.__gradient_descent(self.X, self.y_standardized, self.theta, iterations, learningRate)
-			self.__plot_data(iterations=iterations)
 			self.__save_model()
+			self.__plot_data(iterations=iterations)
 
 	def use_model(self, mileage) -> float:
 		if (mileage < 0):
@@ -270,24 +269,14 @@ class LinearRegression:
 		plt.tight_layout()
 		plt.show()
 
+
+
+
 if __name__ == "__main__":
 	try:
-		file_info = {
-			'filename': 'data.csv',
-			'x_name': 'km',
-			'x_type': int,
-			'y_name': 'price',
-			'y_type': int,
-		}
-		# file_info = {
-		# 	'filename': 'perfect_data.csv',
-		# 	'x_name': 'x',
-		# 	'x_type': int,
-		# 	'y_name': 'y',
-		# 	'y_type': float,
-		# }
+		config_file = "data_subject.json"
 		linearRegression = LinearRegression()
-		linearRegression.train_model(file_info=file_info, iterations=1000, learningRate=0.01, animate=False)
+		linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
 		# linearRegression.use_model(int(input("Entrez votre kilometrage")))
 		# linearRegression.show()
 	except Exception as e:
