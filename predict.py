@@ -5,51 +5,46 @@ from Colors import *
 import argparse
 
 def main():
-	parser = argparse.ArgumentParser(description="Train a model using the provided configuration.")
+	parser = argparse.ArgumentParser(description="Use a pre-trained model to make predictions based on the provided input value.")
 
 	parser.add_argument(
 		'-f', '--file',
 		type=str,
 		required=True,
-		help="The configuration file for training the model."
+		help="The name of the model file that contains the trained model's parameters."
+	)
+	parser.add_argument(
+		'-m', '--mileage',
+		type=int,
+		required=True,
+		help="The mileage for which you want to predict the price."
 	)
 	parser.add_argument(
 		'-s', '--steps',
-		type=int,
-		default=1000,
-		help=f"The number of iterations the AI will go through to train itself (default: 1000)."
-	)
-	parser.add_argument(
-		'-sd', '--show-datas',
-		type=float,
-		default=0.01,
-		help="The learning rate that influences how quickly the model converges (default: 0.01)."
-	)
-	parser.add_argument(
-		'-a', '--animate',
 		action='store_true',
-		help="Enable animation of the training curves."
+		help="If enabled, displays the detailed steps taken during the prediction process."
 	)
+	parser.add_argument(
+		'-g', '--graph',
+		action='store_true',
+		help="If enabled, visualizes the prediction results with a graph."
+	)
+
 
 	args = parser.parse_args()
 
 	try:
-		config_file = args.file
-		iterations = args.iterations
-		learning_rate = args.learning_rate
-		animate = args.animate
-
-		# print(f"Config File: {config_file}")
-		# print(f"Iterations: {iterations}")
-		# print(f"Learning Rate: {learning_rate}")
-		# print(f"Animate: {animate}")
+		model_file = args.file
+		mileage = args.mileage
+		steps = args.steps
+		graph = args.graph
 
 		linearRegression = LinearRegression()
-		linearRegression.train_model(
-			config_file=config_file,
-			iterations=iterations,
-			learningRate=learning_rate,
-			animate=animate
+		linearRegression.use_model(
+			model_file=model_file,
+			mileage=mileage,
+			steps=steps,
+			graph=graph
 		)
 
 	except Exception as e:

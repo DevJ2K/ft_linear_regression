@@ -321,7 +321,7 @@ class LinearRegression:
 		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
 		self.axis_model.legend(['Training Data','Model Prediction', 'Prompt Prediction'], loc='upper right')
 		# self.axis_model.set_title("Prompt Prediction in Training Data", fontdict=plot_info['font_title'])
-		self.axis_model.set_title("Visualizing Prompt with Model and Training Data", fontdict=plot_info['font_title'])
+		self.axis_model.set_title("Visualizing Prompt in Model and Training Data", fontdict=plot_info['font_title'])
 
 		plt.show()
 
