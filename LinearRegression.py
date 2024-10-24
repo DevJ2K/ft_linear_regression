@@ -3,8 +3,6 @@ import csv
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from Standardization import Standardization
-import typer
-import time
 import json
 import os
 from Colors import *
@@ -74,13 +72,10 @@ class LinearRegression:
 		self.cost_history = np.zeros(n_iteration)
 		self.coef_determination_history = np.zeros(n_iteration)
 
-		# with typer.progressbar(range(n_iteration)) as progress:
-			# for i in progress:
 		for i in range(n_iteration):
 			theta = theta - learning_rate * self.__gradient(X, y, theta)
 			self.cost_history[i] = self.__cost_function(X, y, theta)
 			self.coef_determination_history[i] = self.__coef_determination(y, self.__model(X, theta))
-				# time.sleep(0.001)
 
 		self.theta = theta
 
@@ -96,7 +91,6 @@ class LinearRegression:
 
 		self.axis_model.scatter(self.x_data, self.y_data, c=plot_info['data_color'])
 		self.axis_model.get_ylim()
-		# self.axis_model.set_ylim([self.y_data.min(), self.y_data.max()])
 		self.axis_model.set_ylim(self.axis_model.get_ylim())
 
 		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
@@ -191,14 +185,12 @@ class LinearRegression:
 		self.learning_rate = learningRate
 		self.n_iterations = iterations
 
-
 		self.standardization_x_data = Standardization(self.x_data)
 		self.standardization_y_data = Standardization(self.y_data)
 
 		# Data standardized
 		self.x_standardized = self.standardization_x_data.standardize_all()
 		self.y_standardized = self.standardization_y_data.standardize_all()
-
 
 		# We use a standardized X matrice to train the model.
 		self.X = np.hstack((self.x_standardized, np.ones((self.x_data.shape[0], 1))))
@@ -235,9 +227,6 @@ class LinearRegression:
 		self.standardization_x_data.standard_deviation = self.model_info['standard_deviation_x']
 		self.standardization_y_data.standard_deviation = self.model_info['standard_deviation_y']
 
-
-
-
 		standardise_mileage = self.standardization_x_data.standardize(mileage)
 		array_mileage = np.hstack(([[standardise_mileage]], np.ones((1, 1))))
 		prediction_standardized = array_mileage.dot(self.theta)
@@ -263,8 +252,6 @@ class LinearRegression:
 			print("- Finally, to interpret the model's prediction, we need to destandardize the prediction.")
 			print(f"- {BHGREEN}destandardize(y){BHWHITE} = y * μy + σy{RESET}")
 			print(f"- {BHGREEN}{prediction_standardized[0][0]}{BHWHITE} → {prediction}{RESET}", end="\n\n")
-
-
 
 
 		prediction_string = "{:.2f}".format(prediction)
@@ -301,26 +288,14 @@ class LinearRegression:
 		self.axis_model.scatter(self.x_data, self.y_data, c=plot_info['data_color'])
 		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=self.plot_info['model_color'], zorder=1)
 
-		# print(prediction)
-		# self.axis_model.axhline(y=2000, xmax=mileage, color="black", linestyle="--")
-		# print(mileage / self.axis_model.get_xlim()[1])
-		# print(self.axis_model.get_xlim()[1])
-		# print(mileage)
-		# xmax_prediction = mileage / self.axis_model.get_xlim()[1]
-		# ymax_prediction = prediction / self.axis_model.get_ylim()[1]
-
-		# print(xmax_prediction)
-		# print(ymax_prediction)
 		self.axis_model.scatter(mileage, prediction, marker='^', c=self.plot_info['prediction_color'], zorder=2)
 
 		self.axis_model.axhline(y=prediction, color="#A0A0A0", linestyle=":", zorder=1)
 		self.axis_model.axvline(x=mileage, color="#A0A0A0", linestyle=":", zorder=1)
 
-
 		self.axis_model.set_xlabel("Mileage (km)", fontdict=plot_info['font_axis'])
 		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
 		self.axis_model.legend(['Training Data','Model Prediction', 'Prompt Prediction'], loc='upper right')
-		# self.axis_model.set_title("Prompt Prediction in Training Data", fontdict=plot_info['font_title'])
 		self.axis_model.set_title("Visualizing Prompt in Model and Training Data", fontdict=plot_info['font_title'])
 
 		plt.show()
@@ -336,21 +311,7 @@ class LinearRegression:
 		self.axis_diff_cost_precision = self.axis[0][1]
 		self.axis_cost = self.axis[1][0]
 		self.axis_precision = self.axis[1][1]
-
-
-		# https://matplotlib.org/stable/users/explain/animations/animations.html
-		# Implement curses animation
-
-		# self.fig.canvas.manager.set_window_title("Linear Regression")
-
-		font_axis = {'color':'#252525'}#,'size':12}
-		font_title = {'color':'#000000'}#,'size':12}
-
 		# (axis_model, axis_diff_cost_precision, axis_cost, axis_precision) = self.axis
-		# axis_model = self.axis[0][0]
-		# axis_diff_cost_precision = self.axis[0][1]
-		# axis_cost = self.axis[1][0]
-		# axis_precision = self.axis[1][1]
 
 		self.fig.set_facecolor(plot_info['window_bg'])
 
@@ -361,8 +322,6 @@ class LinearRegression:
 		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
 		self.axis_model.legend(['Training Data','Model Prediction'], loc='upper right')
 		self.axis_model.set_title("Model Prediction vs Training Data", fontdict=plot_info['font_title'])
-
-
 
 		self.axis_diff_cost_precision.plot(range(iterations), self.coef_determination_history, c='g')
 		self.axis_diff_cost_precision.plot(range(iterations), self.cost_history, c='r')
@@ -396,8 +355,7 @@ if __name__ == "__main__":
 		config_file = "data_subject.json"
 		linearRegression = LinearRegression()
 		# linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
-		# linearRegression.use_model(int(input("Entrez votre kilometrage -> ")))
-		mileage = 975000
+		# mileage = 975000
 		mileage = 26000
 		# mileage = int(input("Enter your mileage -> "))
 		model_file = "model_data_subject.json"

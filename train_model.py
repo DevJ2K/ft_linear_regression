@@ -39,11 +39,6 @@ def main():
 		learning_rate = args.learning_rate
 		animate = args.animate
 
-		# print(f"Config File: {config_file}")
-		# print(f"Iterations: {iterations}")
-		# print(f"Learning Rate: {learning_rate}")
-		# print(f"Animate: {animate}")
-
 		linearRegression = LinearRegression()
 		linearRegression.train_model(
 			config_file=config_file,
