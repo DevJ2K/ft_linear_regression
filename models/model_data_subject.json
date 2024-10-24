@@ -1,6 +1,7 @@
 {
-    "precision": 0.7329747064654101,
-    "iteration": 1000,
+    "config_file": "data_subject.json",
+    "coef_determination": 0.7329747064654101,
+    "iterations": 1000,
     "learning_rate": 0.01,
     "theta": [
         [
