@@ -2,7 +2,7 @@ import numpy as np
 import csv
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from Normalization import Normalization
+from Standardization import Standardization
 import typer
 import time
 import json
@@ -25,11 +25,12 @@ class LinearRegression:
 			'window_bg': '#d1d2ff',
 			'data_color': '#0c0066',
 			'model_color': '#eb7eff',
+			'prediction_color': '#ff0000',
 			'font_axis': {'color':'#252525'},
 			'font_title': {'color':'#000000'}
 		}
 
-	def show_informations(self):
+	def __show_informations(self):
 		# print(f"{BHWHITE}*{RESET}" * 40)
 		print(f"{BHWHITE}** STATISTICS **********************{RESET}")
 		print(f"{BHYELLOW}WARNING: Theta was trained on standardized data.{RESET}")
@@ -42,10 +43,10 @@ class LinearRegression:
 		print(f"{BHMAG}Learning Rate : {MAG}{self.learning_rate}{RESET}\n")
 
 		print(f"{BHWHITE}** STANDARDIZATION INFORMATIONS ****{RESET}")
-		print(f"{BHCYAN}Mean X (μ): {CYAN}{self.normalize_x_data.mean}{RESET}")
-		print(f"{BHCYAN}Mean Y (μ): {CYAN}{self.normalize_y_data.mean}{RESET}")
-		print(f"{BHBLUE}Standard Deviation X (σ): {BLUE}{self.normalize_x_data.standard_deviation}{RESET}")
-		print(f"{BHBLUE}Standard Deviation Y (σ): {BLUE}{self.normalize_y_data.standard_deviation}{RESET}\n")
+		print(f"{BHCYAN}Mean X (μ): {CYAN}{self.standardization_x_data.mean}{RESET}")
+		print(f"{BHCYAN}Mean Y (μ): {CYAN}{self.standardization_y_data.mean}{RESET}")
+		print(f"{BHBLUE}Standard Deviation X (σ): {BLUE}{self.standardization_x_data.standard_deviation}{RESET}")
+		print(f"{BHBLUE}Standard Deviation Y (σ): {BLUE}{self.standardization_y_data.standard_deviation}{RESET}\n")
 
 	def __model(self, X: np.ndarray, theta: np.ndarray) -> np.ndarray:
 		"""_summary_
@@ -97,7 +98,7 @@ class LinearRegression:
 		# self.axis_model.set_ylim([self.y_data.min(), self.y_data.max()])
 		self.axis_model.set_ylim(self.axis_model.get_ylim())
 
-		self.axis_model.plot(self.x_data, self.normalize_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
+		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
 
 		self.axis_model.set_xlabel("Mileage (km)", fontdict=plot_info['font_axis'])
 		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
@@ -135,14 +136,15 @@ class LinearRegression:
 			file = "model_" + self.file_info["filename"]
 
 		data = {
-			"precision": self.coef_determination_history[-1],
-			"iteration": self.n_iterations,
+			"config_file": self.file_info['filename'],
+			"coef_determination": self.coef_determination_history[-1],
+			"iterations": self.n_iterations,
 			"learning_rate": self.learning_rate,
 			"theta": self.theta.tolist(),
-			"mean_x": self.normalize_x_data.mean,
-			"mean_y": self.normalize_y_data.mean,
-			"standard_deviation_x": self.normalize_x_data.standard_deviation,
-			"standard_deviation_y": self.normalize_y_data.standard_deviation,
+			"mean_x": self.standardization_x_data.mean,
+			"mean_y": self.standardization_y_data.mean,
+			"standard_deviation_x": self.standardization_x_data.standard_deviation,
+			"standard_deviation_y": self.standardization_y_data.standard_deviation,
 		}
 		try:
 			file_path = os.path.join(self.MODELS_PATH, file)
@@ -151,6 +153,25 @@ class LinearRegression:
 			print(f"{BHGREEN}SUCCESS: {GREEN}The training has been successfully saved in the file '{file_path}'.{RESET}\n")
 		except:
 			print(f"{BHRED}FAILURE: {RED}Failed to save the model in '{file_path}'. Please check file permissions or storage space and try again.{RESET}\n")
+
+
+	def __init_data(self, config_file: str):
+		with open(os.path.join(self.DATAS_PATH, "configs", config_file)) as json_file:
+			self.file_info = json.load(json_file)
+			self.file_info['filename'] = config_file
+
+		file = self.file_info['datafile']
+		x_type = eval(self.file_info['x_type'])
+		y_type = eval(self.file_info['y_type'])
+
+		with open(os.path.join(self.DATAS_PATH, "sets", file)) as csvfile:
+			reader = csv.DictReader(csvfile)
+			self.data = np.array([(x_type(row[reader.fieldnames[0]]), y_type(row[reader.fieldnames[1]])) for row in reader])
+
+		# We don't standardise this data.
+		self.x_data = self.data[:,0].reshape(-1, 1)
+		self.y_data = self.data[:,1].reshape(-1, 1)
+
 
 	def train_model(self,
 			config_file: str,
@@ -162,34 +183,20 @@ class LinearRegression:
 			print("Iterations cannot be minus or equal 0")
 			return
 		try:
-			with open(os.path.join(self.DATAS_PATH, "configs", config_file)) as json_file:
-				self.file_info = json.load(json_file)
-				self.file_info['filename'] = config_file
-
-			file = self.file_info['datafile']
-			x_type = eval(self.file_info['x_type'])
-			y_type = eval(self.file_info['y_type'])
-
-			with open(os.path.join(self.DATAS_PATH, "sets", file)) as csvfile:
-				reader = csv.DictReader(csvfile)
-				self.data = np.array([(x_type(row[reader.fieldnames[0]]), y_type(row[reader.fieldnames[1]])) for row in reader])
+			self.__init_data(config_file=config_file)
 		except:
 			raise DataError(f"Failed to initialize data from provide file '{config_file}'.")
 
 		self.learning_rate = learningRate
 		self.n_iterations = iterations
 
-		# We don't standardise this data.
-		self.x_data = self.data[:,0].reshape(-1, 1)
-		self.y_data = self.data[:,1].reshape(-1, 1)
 
-
-		self.normalize_x_data = Normalization(self.x_data)
-		self.normalize_y_data = Normalization(self.y_data)
+		self.standardization_x_data = Standardization(self.x_data)
+		self.standardization_y_data = Standardization(self.y_data)
 
 		# Data standardized
-		self.x_standardized = self.normalize_x_data.standardize_all()
-		self.y_standardized = self.normalize_y_data.standardize_all()
+		self.x_standardized = self.standardization_x_data.standardize_all()
+		self.y_standardized = self.standardization_y_data.standardize_all()
 
 
 		# We use a standardized X matrice to train the model.
@@ -204,28 +211,99 @@ class LinearRegression:
 		else:
 			self.__gradient_descent(self.X, self.y_standardized, self.theta, iterations, learningRate)
 			self.__save_model()
-			self.show_informations()
+			self.__show_informations()
 			self.__plot_data(iterations=iterations)
 
-	def use_model(self, mileage) -> float:
+	def use_model(self, model_file: str, mileage: int) -> float:
 		if (mileage < 0):
 			raise DataError("Mileage cannot be less than 0.")
-		print("PREDICTION")
-		standardise_mileage = self.normalize_x_data.standardize(mileage)
-		print(standardise_mileage)
+		with open(os.path.join(self.MODELS_PATH, model_file)) as json_file:
+				self.model_info = json.load(json_file)
+
+		self.coef_determination_history = [self.model_info['coef_determination']]
+		self.n_iterations = self.model_info['iterations']
+		self.learning_rate = self.model_info['learning_rate']
+		self.theta = np.array(self.model_info['theta'])
+
+		self.standardization_x_data = Standardization()
+		self.standardization_y_data = Standardization()
+
+		self.standardization_x_data.mean = self.model_info['mean_x']
+		self.standardization_y_data.mean = self.model_info['mean_y']
+
+		self.standardization_x_data.standard_deviation = self.model_info['standard_deviation_x']
+		self.standardization_y_data.standard_deviation = self.model_info['standard_deviation_y']
+
+
+
+
+		print(" *PREDICTION ********")
+		standardise_mileage = self.standardization_x_data.standardize(mileage)
 		array_mileage = np.hstack(([[standardise_mileage]], np.ones((1, 1))))
+		print(standardise_mileage)
 		print(array_mileage)
-		print(array_mileage.shape)
-		print(self.theta.shape)
+		prediction_standardized = array_mileage.dot(self.theta)
+		print(prediction_standardized)
+		prediction = self.standardization_y_data.destandardize(prediction_standardized[0][0])
+		print(prediction)
+		# print(array_mileage.shape)
+		# print(self.theta.shape)
+		self.__show_prediction_informations(mileage=mileage, prediction=prediction)
 
 		# print(array_mileage.dot(self.theta))
-		print(self.normalize_y_data.destandardize(array_mileage.dot(self.theta)))
+		# print(self.standardization_y_data.destandardize(array_mileage.dot(self.theta)))
 		# pred = self.theta[0] * mileage + self.theta[1]
 		# print(pred)
-		# print(self.normalize_y_data.destandardize(pred))
+		# print(self.standardization_y_data.destandardize(pred))
 		# print(self.__model([240000], self.theta))
 		# LOAD LE MODEL
 
+
+	def __show_prediction_informations(self, mileage: int, prediction: float):
+		self.__show_informations()
+		try:
+			config_file = self.model_info['config_file']
+			if config_file is None:
+				raise Exception
+		except:
+			raise FileNotFoundError("Config file is missing in the model informations.")
+		try:
+			self.__init_data(config_file=config_file)
+			self.X = np.hstack((self.standardization_x_data.standardize(self.x_data), np.ones((self.x_data.shape[0], 1))))
+		except:
+			raise DataError(f"Failed to initialize data from provide file '{config_file}'.")
+
+		plot_info = self.plot_info
+		self.fig, self.axis_model = plt.subplots(1, 1)
+		self.fig.canvas.manager.set_window_title(plot_info['window_title'])
+		self.fig.set_facecolor(self.plot_info['window_bg'])
+
+		self.axis_model.scatter(self.x_data, self.y_data, c=plot_info['data_color'])
+		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=self.plot_info['model_color'], zorder=1)
+
+		print(prediction)
+		# self.axis_model.axhline(y=2000, xmax=mileage, color="black", linestyle="--")
+		print(mileage / self.axis_model.get_xlim()[1])
+		print(self.axis_model.get_xlim()[1])
+		print(mileage)
+		# xmax_prediction = mileage / self.axis_model.get_xlim()[1]
+		# ymax_prediction = prediction / self.axis_model.get_ylim()[1]
+
+		# print(xmax_prediction)
+		# print(ymax_prediction)
+		self.axis_model.scatter(mileage, prediction, marker='^', c=self.plot_info['prediction_color'], zorder=2)
+
+		self.axis_model.axhline(y=prediction, color="#A0A0A0", linestyle=":", zorder=1)
+		self.axis_model.axvline(x=mileage, color="#A0A0A0", linestyle=":", zorder=1)
+
+
+		self.axis_model.set_xlabel("Mileage (km)", fontdict=plot_info['font_axis'])
+		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
+		self.axis_model.legend(['Training Data','Model Prediction', 'Prompt Prediction'], loc='upper right')
+		# self.axis_model.set_title("Prompt Prediction in Training Data", fontdict=plot_info['font_title'])
+		self.axis_model.set_title("Visualizing Prompt with Model and Training Data", fontdict=plot_info['font_title'])
+
+		plt.show()
 
 
 	def __plot_data(self, iterations: int):
@@ -258,7 +336,7 @@ class LinearRegression:
 
 		self.axis_model.scatter( self.x_data, self.y_data, c=plot_info['data_color'])
 
-		self.axis_model.plot(self.x_data, self.normalize_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
+		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=plot_info['model_color'])
 		self.axis_model.set_xlabel("Mileage (km)", fontdict=plot_info['font_axis'])
 		self.axis_model.set_ylabel("Price (€)", fontdict=plot_info['font_axis'])
 		self.axis_model.legend(['Training Data','Model Prediction'], loc='upper right')
@@ -295,10 +373,14 @@ class LinearRegression:
 
 if __name__ == "__main__":
 	try:
-		config_file = "perfect_data.json"
+		config_file = "data_subject.json"
 		linearRegression = LinearRegression()
-		linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
-		# linearRegression.use_model(int(input("Entrez votre kilometrage")))
+		# linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
+		# linearRegression.use_model(int(input("Entrez votre kilometrage -> ")))
+		mileage = 97500
+		# mileage = int(input("Enter your mileage -> "))
+		model_file = "model_data_subject.json"
+		linearRegression.use_model(model_file=model_file, mileage=mileage)
 		# linearRegression.show()
 	except Exception as e:
 		print("Not able to perform linear regression. :")
