@@ -7,6 +7,7 @@ import typer
 import time
 import json
 import os
+from Colors import *
 
 class DataError(Exception):
 	pass
@@ -28,6 +29,23 @@ class LinearRegression:
 			'font_title': {'color':'#000000'}
 		}
 
+	def show_informations(self):
+		# print(f"{BHWHITE}*{RESET}" * 40)
+		print(f"{BHWHITE}** STATISTICS **********************{RESET}")
+		print(f"{BHYELLOW}WARNING: Theta was trained on standardized data.{RESET}")
+
+		print(f"{BHGREEN}Thetaθ(0) (Weight): {GREEN}{self.theta[0]}{RESET}")
+		print(f"{BHGREEN}Thetaθ(1) (Bias): {GREEN}{self.theta[1]}{RESET}\n")
+
+		print(f"{BHWHITE}** LEARNING INFORMATIONS ***********{RESET}")
+		print(f"{BHMAG}Iterations : {MAG}{self.n_iterations}{RESET}")
+		print(f"{BHMAG}Learning Rate : {MAG}{self.learning_rate}{RESET}\n")
+
+		print(f"{BHWHITE}** STANDARDIZATION INFORMATIONS ****{RESET}")
+		print(f"{BHCYAN}Mean X (μ): {CYAN}{self.normalize_x_data.mean}{RESET}")
+		print(f"{BHCYAN}Mean Y (μ): {CYAN}{self.normalize_y_data.mean}{RESET}")
+		print(f"{BHBLUE}Standard Deviation X (σ): {BLUE}{self.normalize_x_data.standard_deviation}{RESET}")
+		print(f"{BHBLUE}Standard Deviation Y (σ): {BLUE}{self.normalize_y_data.standard_deviation}{RESET}\n")
 
 	def __model(self, X: np.ndarray, theta: np.ndarray) -> np.ndarray:
 		"""_summary_
@@ -120,18 +138,19 @@ class LinearRegression:
 			"precision": self.coef_determination_history[-1],
 			"iteration": self.n_iterations,
 			"learning_rate": self.learning_rate,
-			"theta": None,
+			"theta": self.theta.tolist(),
 			"mean_x": self.normalize_x_data.mean,
 			"mean_y": self.normalize_y_data.mean,
 			"standard_deviation_x": self.normalize_x_data.standard_deviation,
 			"standard_deviation_y": self.normalize_y_data.standard_deviation,
 		}
 		try:
-			with open(os.path.join(self.MODELS_PATH, file), 'w') as json_file:
+			file_path = os.path.join(self.MODELS_PATH, file)
+			with open(file_path, 'w') as json_file:
 				json.dump(data, json_file, indent=4)
+			print(f"{BHGREEN}SUCCESS: {GREEN}The training has been successfully saved in the file '{file_path}'.{RESET}\n")
 		except:
-			print(f"Cannot save the model in {file}")
-			return
+			print(f"{BHRED}FAILURE: {RED}Failed to save the model in '{file_path}'. Please check file permissions or storage space and try again.{RESET}\n")
 
 	def train_model(self,
 			config_file: str,
@@ -180,11 +199,12 @@ class LinearRegression:
 
 		# print(self.__coef_determination(self.y_data, self.__model(self.X, self.theta)))
 		if (animate == True):
-			print("That display only the model with animating but not saving because is not optimal.")
+			print(f"{BHYELLOW}WARNING: {YELLOW}The model will be displayed with animation, but the training session will not be saved due to performance considerations.{RESET}")
 			self.__animate_gradient_descent(iterations)
 		else:
 			self.__gradient_descent(self.X, self.y_standardized, self.theta, iterations, learningRate)
 			self.__save_model()
+			self.show_informations()
 			self.__plot_data(iterations=iterations)
 
 	def use_model(self, mileage) -> float:

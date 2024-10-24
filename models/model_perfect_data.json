@@ -2,7 +2,14 @@
     "precision": 0.9999999981362434,
     "iteration": 1000,
     "learning_rate": 0.01,
-    "theta": null,
+    "theta": [
+        [
+            0.9999568287525894
+        ],
+        [
+            8.500673911394896e-19
+        ]
+    ],
     "mean_x": 0.0,
     "mean_y": 8.0,
     "standard_deviation_x": 11.832159566199232,
