@@ -266,15 +266,16 @@ class LinearRegression:
 
 
 
-		if graph == True:
-			self.__show_prediction_informations(mileage=mileage, prediction=prediction, steps=steps)
 
 		prediction_string = "{:.2f}".format(prediction)
 		print(f"{BHWHITE}PREDICTION → {RESET}", end="")
 		if prediction > 0:
-			print(f"{BHWHITE}With a mileage of {BHGREEN}{mileage}km{BHWHITE}, the estimate price of your car is {BHGREEN}{prediction_string}€{BGREEN}.{RESET}")
+			print(f"{BHWHITE}With a mileage of {BHGREEN}{mileage}km{BHWHITE}, the estimate price of your car is {BHGREEN}{prediction_string}€{BGREEN}.{RESET}\n")
 		else:
-			print(f"{BHYELLOW}With a mileage of {BHRED}{mileage}km{BHYELLOW}, the estimate price of your car is minus 0€ {BHRED}({prediction_string}€){BHYELLOW}. This result is due to the data and model used.")
+			print(f"{BHYELLOW}With a mileage of {BHRED}{mileage}km{BHYELLOW}, the estimate price of your car is minus 0€ {BHRED}({prediction_string}€){BHYELLOW}. This result is due to the data and model used.\n")
+
+		if graph == True:
+			self.__show_prediction_informations(mileage=mileage, prediction=prediction, steps=steps)
 
 
 	def __show_prediction_informations(self, mileage: int, prediction: float, steps: bool):
@@ -300,11 +301,11 @@ class LinearRegression:
 		self.axis_model.scatter(self.x_data, self.y_data, c=plot_info['data_color'])
 		self.axis_model.plot(self.x_data, self.standardization_y_data.destandardize(self.__model(self.X, self.theta)), c=self.plot_info['model_color'], zorder=1)
 
-		print(prediction)
+		# print(prediction)
 		# self.axis_model.axhline(y=2000, xmax=mileage, color="black", linestyle="--")
-		print(mileage / self.axis_model.get_xlim()[1])
-		print(self.axis_model.get_xlim()[1])
-		print(mileage)
+		# print(mileage / self.axis_model.get_xlim()[1])
+		# print(self.axis_model.get_xlim()[1])
+		# print(mileage)
 		# xmax_prediction = mileage / self.axis_model.get_xlim()[1]
 		# ymax_prediction = prediction / self.axis_model.get_ylim()[1]
 
@@ -400,7 +401,7 @@ if __name__ == "__main__":
 		mileage = 26000
 		# mileage = int(input("Enter your mileage -> "))
 		model_file = "model_data_subject.json"
-		linearRegression.use_model(model_file=model_file, mileage=mileage, steps=True, graph=False)
+		linearRegression.use_model(model_file=model_file, mileage=mileage, steps=False, graph=True)
 		# linearRegression.show()
 	except Exception as e:
 		print("Not able to perform linear regression. :")
