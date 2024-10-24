@@ -15,7 +15,6 @@ class LinearRegression:
 
 	def __init__(self):
 		ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-		print(ROOT_PATH)
 
 		self.MODELS_PATH = os.path.join(ROOT_PATH, "models")
 		self.DATAS_PATH = os.path.join(ROOT_PATH, "datas")
@@ -97,7 +96,7 @@ class LinearRegression:
 		self.cost_history = np.zeros(n_iteration)
 		self.coef_determination_history = np.zeros(n_iteration)
 
-		anim = FuncAnimation(self.fig, self.update, frames=np.arange(1, n_iteration), interval=0)
+		anim = FuncAnimation(self.fig, self.update, frames=n_iteration, interval=0, repeat=False)
 		plt.show()
 
 	def __coef_determination(self, y: np.ndarray, pred: np.ndarray):
@@ -144,7 +143,6 @@ class LinearRegression:
 			print("Iterations cannot be minus or equal 0")
 			return
 		try:
-			print(os.path.join(self.DATAS_PATH, "configs", config_file))
 			with open(os.path.join(self.DATAS_PATH, "configs", config_file)) as json_file:
 				self.file_info = json.load(json_file)
 				self.file_info['filename'] = config_file
