@@ -15,7 +15,7 @@ class Standardization:
 	e: Standard deviation of the variable's values
 	"""
 
-	def __init__(self, array: np.ndarray = np.zeros(0)):
+	def __init__(self, array: np.ndarray = np.zeros(1)):
 		self.array: np.ndarray = array
 		self.mean = array.mean()
 		self.standard_deviation = array.std()

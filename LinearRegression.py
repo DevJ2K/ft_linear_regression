@@ -32,21 +32,22 @@ class LinearRegression:
 
 	def __show_informations(self):
 		# print(f"{BHWHITE}*{RESET}" * 40)
-		print(f"{BHWHITE}** STATISTICS **********************{RESET}")
+		print(f"{BHWHITE}** STATISTICS ***********************************{RESET}")
 		print(f"{BHYELLOW}WARNING: Theta was trained on standardized data.{RESET}")
 
 		print(f"{BHGREEN}Thetaθ(0) (Weight): {GREEN}{self.theta[0]}{RESET}")
-		print(f"{BHGREEN}Thetaθ(1) (Bias): {GREEN}{self.theta[1]}{RESET}\n")
+		print(f"{BHGREEN}Thetaθ(1) (Bias): {GREEN}{self.theta[1]}{RESET}")
+		print(f"{BHGREEN}Thetaθ - Matrix form:\n{GREEN}{self.theta}{RESET}\n")
 
-		print(f"{BHWHITE}** LEARNING INFORMATIONS ***********{RESET}")
+		print(f"{BHWHITE}** LEARNING INFORMATIONS ************************{RESET}")
 		print(f"{BHMAG}Iterations : {MAG}{self.n_iterations}{RESET}")
 		print(f"{BHMAG}Learning Rate : {MAG}{self.learning_rate}{RESET}\n")
 
-		print(f"{BHWHITE}** STANDARDIZATION INFORMATIONS ****{RESET}")
-		print(f"{BHCYAN}Mean X (μ): {CYAN}{self.standardization_x_data.mean}{RESET}")
-		print(f"{BHCYAN}Mean Y (μ): {CYAN}{self.standardization_y_data.mean}{RESET}")
-		print(f"{BHBLUE}Standard Deviation X (σ): {BLUE}{self.standardization_x_data.standard_deviation}{RESET}")
-		print(f"{BHBLUE}Standard Deviation Y (σ): {BLUE}{self.standardization_y_data.standard_deviation}{RESET}\n")
+		print(f"{BHWHITE}** STANDARDIZATION INFORMATIONS *****************{RESET}")
+		print(f"{BHCYAN}Mean X (μx): {CYAN}{self.standardization_x_data.mean}{RESET}")
+		print(f"{BHCYAN}Mean Y (μy): {CYAN}{self.standardization_y_data.mean}{RESET}")
+		print(f"{BHBLUE}Standard Deviation X (σx): {BLUE}{self.standardization_x_data.standard_deviation}{RESET}")
+		print(f"{BHBLUE}Standard Deviation Y (σy): {BLUE}{self.standardization_y_data.standard_deviation}{RESET}\n")
 
 	def __model(self, X: np.ndarray, theta: np.ndarray) -> np.ndarray:
 		"""_summary_
@@ -214,7 +215,7 @@ class LinearRegression:
 			self.__show_informations()
 			self.__plot_data(iterations=iterations)
 
-	def use_model(self, model_file: str, mileage: int) -> float:
+	def use_model(self, model_file: str, mileage: int, steps: bool = False, graph: bool = False) -> float:
 		if (mileage < 0):
 			raise DataError("Mileage cannot be less than 0.")
 		with open(os.path.join(self.MODELS_PATH, model_file)) as json_file:
@@ -237,30 +238,48 @@ class LinearRegression:
 
 
 
-		print(" *PREDICTION ********")
 		standardise_mileage = self.standardization_x_data.standardize(mileage)
 		array_mileage = np.hstack(([[standardise_mileage]], np.ones((1, 1))))
-		print(standardise_mileage)
-		print(array_mileage)
 		prediction_standardized = array_mileage.dot(self.theta)
-		print(prediction_standardized)
 		prediction = self.standardization_y_data.destandardize(prediction_standardized[0][0])
-		print(prediction)
-		# print(array_mileage.shape)
-		# print(self.theta.shape)
-		self.__show_prediction_informations(mileage=mileage, prediction=prediction)
 
-		# print(array_mileage.dot(self.theta))
-		# print(self.standardization_y_data.destandardize(array_mileage.dot(self.theta)))
-		# pred = self.theta[0] * mileage + self.theta[1]
-		# print(pred)
-		# print(self.standardization_y_data.destandardize(pred))
-		# print(self.__model([240000], self.theta))
-		# LOAD LE MODEL
+		if steps == True:
+			self.__show_informations()
+			print(f"{BHCYAN}** 1. STANDARDIZED INPUT ************************{RESET}")
+			print("- The model has been trained on standardized data, so we need to standardize the input before using the model.")
+			print(f"- {BHGREEN}standardize(x){BHWHITE} = (x - μx)/σx{RESET}")
+			print(f"- {BHGREEN}standardize({mileage}){BHWHITE} = {standardise_mileage}{RESET}", end="\n\n")
+
+			print(f"{BHCYAN}** 2. CONVERT STANDARDIZED INPUT TO MATRIX ******{RESET}")
+			print("- The model uses matrix product to make predictions, so we need to transform our standardized input into a matrix.")
+			print(f"- {BHGREEN}{standardise_mileage} {BHWHITE}→ {array_mileage}{RESET}", end="\n\n")
+
+			print(f"{BHCYAN}** 3. APPLY MODEL ON MATRIX *********************{RESET}")
+			print(f"- The model uses theta (θ) to perform matrix product and provide our prediction.")
+			print(f"- {BHGREEN}model(X) {BHWHITE}= X.θ{RESET}", end="\n\n")
+			print(f"- {BHGREEN}model({array_mileage}) {BHWHITE}= {prediction_standardized[0][0]}{RESET}", end="\n\n")
+
+			print(f"{BHCYAN}** 4. DESTANDARDIZED PREDICTION *****************{RESET}")
+			print("- Finally, to interpret the model's prediction, we need to destandardize the prediction.")
+			print(f"- {BHGREEN}destandardize(y){BHWHITE} = y * μy + σy{RESET}")
+			print(f"- {BHGREEN}{prediction_standardized[0][0]}{BHWHITE} → {prediction}{RESET}", end="\n\n")
 
 
-	def __show_prediction_informations(self, mileage: int, prediction: float):
-		self.__show_informations()
+
+		if graph == True:
+			self.__show_prediction_informations(mileage=mileage, prediction=prediction, steps=steps)
+
+		prediction_string = "{:.2f}".format(prediction)
+		print(f"{BHWHITE}PREDICTION → {RESET}", end="")
+		if prediction > 0:
+			print(f"{BHWHITE}With a mileage of {BHGREEN}{mileage}km{BHWHITE}, the estimate price of your car is {BHGREEN}{prediction_string}€{BGREEN}.{RESET}")
+		else:
+			print(f"{BHYELLOW}With a mileage of {BHRED}{mileage}km{BHYELLOW}, the estimate price of your car is minus 0€ {BHRED}({prediction_string}€){BHYELLOW}. This result is due to the data and model used.")
+
+
+	def __show_prediction_informations(self, mileage: int, prediction: float, steps: bool):
+		if (steps == False):
+			self.__show_informations()
 		try:
 			config_file = self.model_info['config_file']
 			if config_file is None:
@@ -377,10 +396,11 @@ if __name__ == "__main__":
 		linearRegression = LinearRegression()
 		# linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
 		# linearRegression.use_model(int(input("Entrez votre kilometrage -> ")))
-		mileage = 97500
+		mileage = 975000
+		mileage = 26000
 		# mileage = int(input("Enter your mileage -> "))
 		model_file = "model_data_subject.json"
-		linearRegression.use_model(model_file=model_file, mileage=mileage)
+		linearRegression.use_model(model_file=model_file, mileage=mileage, steps=True, graph=False)
 		# linearRegression.show()
 	except Exception as e:
 		print("Not able to perform linear regression. :")
