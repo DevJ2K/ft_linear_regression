@@ -110,7 +110,10 @@ class LinearRegression:
 
 	def __save_model(self):
 		try:
-			file = str(self.file_info["model_file"])
+			if self.file_info["model_file"] is not None:
+				file = str(self.file_info["model_file"])
+			else:
+				raise Exception
 		except:
 			file = "model_" + self.file_info["filename"]
 
@@ -274,7 +277,7 @@ class LinearRegression:
 
 if __name__ == "__main__":
 	try:
-		config_file = "data_subject.json"
+		config_file = "perfect_data.json"
 		linearRegression = LinearRegression()
 		linearRegression.train_model(config_file=config_file, iterations=1000, learningRate=0.01, animate=False)
 		# linearRegression.use_model(int(input("Entrez votre kilometrage")))
