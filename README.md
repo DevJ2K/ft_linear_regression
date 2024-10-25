@@ -3,19 +3,13 @@
 <img src="/gitimages/miniature.png" alt="Project Overview" width="100%">
 
 ## 📄 Overview
-![Python version](https://img.shields.io/badge/Python-3.10%2B-blue)
 
-This project focuses on creating a program that trains and uses a linear regression model.
+The goal of this project is to introduce basic machine learning concepts. You’ll create a program to predict car prices using a simple linear regression model trained with a gradient descent algorithm. The project focuses on a specific example—predicting car price based on mileage—but once complete, you can apply the model to any similar dataset.
 
-Computorv1 is designed to solve polynomial equations of up to the second degree. It achieves this by:
-
-- Displaying equations in their reduced form.
-- Identifying the equation's degree.
-- Showing the solution(s) and analyzing the discriminant's nature (positive, negative, or zero).
-
-This project is part of a series to strengthen mathematical skills for future applications.
+You’ll build two programs. The first will predict car prices: it prompts you for a mileage value, then returns the estimated price for that mileage. The second program trains the model by reading a dataset and applying linear regression to adjust the model for accurate predictions.
 
 ## 📦 Installation
+![Python version](https://img.shields.io/badge/Python-3.10%2B-blue)
 
 Ensure you have Python 3.10 or newer. Download the latest version of Python from the official [Python website](https://www.python.org/downloads/).
 
