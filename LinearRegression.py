@@ -39,7 +39,9 @@ class LinearRegression:
 
 		print(f"{BHWHITE}** LEARNING INFORMATIONS ************************{RESET}")
 		print(f"{BHMAG}Iterations : {MAG}{self.n_iterations}{RESET}")
-		print(f"{BHMAG}Learning Rate : {MAG}{self.learning_rate}{RESET}\n")
+		print(f"{BHMAG}Learning Rate : {MAG}{self.learning_rate}{RESET}")
+		print(f"{BHMAG}Coefficient of determination : {MAG}{self.last_coef}{RESET}\n")
+		# print(f"{BHMAG}Coefficient of determination (%) : {MAG}{self.last_coef * 100}%{RESET}\n")
 
 		print(f"{BHWHITE}** STANDARDIZATION INFORMATIONS *****************{RESET}")
 		print(f"{BHCYAN}Mean X (μx): {CYAN}{self.standardization_x_data.mean}{RESET}")
@@ -77,6 +79,7 @@ class LinearRegression:
 			self.cost_history[i] = self.__cost_function(X, y, theta)
 			self.coef_determination_history[i] = self.__coef_determination(y, self.__model(X, theta))
 
+		self.last_coef = self.coef_determination_history[-1]
 		self.theta = theta
 
 
@@ -213,7 +216,8 @@ class LinearRegression:
 		with open(os.path.join(self.MODELS_PATH, model_file)) as json_file:
 				self.model_info = json.load(json_file)
 
-		self.coef_determination_history = [self.model_info['coef_determination']]
+		# self.coef_determination_history = [self.model_info['coef_determination']]
+		self.last_coef = self.model_info['coef_determination']
 		self.n_iterations = self.model_info['iterations']
 		self.learning_rate = self.model_info['learning_rate']
 		self.theta = np.array(self.model_info['theta'])

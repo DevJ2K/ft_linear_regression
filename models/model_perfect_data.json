@@ -1,13 +1,14 @@
 {
-    "precision": 0.9999999981362434,
-    "iteration": 1000,
+    "config_file": "perfect_data.json",
+    "coef_determination": 1.0,
+    "iterations": 5000,
     "learning_rate": 0.01,
     "theta": [
         [
-            0.9999568287525894
+            0.9999999999999946
         ],
         [
-            8.500673911394896e-19
+            4.855914888872913e-18
         ]
     ],
     "mean_x": 0.0,
