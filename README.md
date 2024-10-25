@@ -112,6 +112,7 @@ Thetaθ - Matrix form:
 ** LEARNING INFORMATIONS ************************
 Iterations : 1500
 Learning Rate : 0.01
+Coefficient of determination : 0.7329747078314375
 
 ** STANDARDIZATION INFORMATIONS *****************
 Mean X (μx): 101066.25
@@ -144,6 +145,7 @@ Thetaθ - Matrix form:
 ** LEARNING INFORMATIONS ************************
 Iterations : 1500
 Learning Rate : 0.01
+Coefficient of determination : 0.7329747078314375
 
 ** STANDARDIZATION INFORMATIONS *****************
 Mean X (μx): 101066.25
