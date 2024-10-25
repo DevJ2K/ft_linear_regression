@@ -2,23 +2,14 @@
 
 <img src="/gitimages/miniature.png" alt="Project Overview" width="100%">
 
-## Overview
+## 📄 Overview
 
+The goal of this project is to introduce basic machine learning concepts. You’ll create a program to predict car prices using a simple linear regression model trained with a gradient descent algorithm. The project focuses on a specific example—predicting car price based on mileage—but once complete, you can apply the model to any similar dataset.
+
+You’ll build two programs. The first will predict car prices: it prompts you for a mileage value, then returns the estimated price for that mileage. The second program trains the model by reading a dataset and applying linear regression to adjust the model for accurate predictions.
+
+## 📦 Installation
 ![Python version](https://img.shields.io/badge/Python-3.10%2B-blue)
-
-## Description
-
-This project focuses on creating a program that trains and uses a linear regression model.
-
-Computorv1 is designed to solve polynomial equations of up to the second degree. It achieves this by:
-
-- Displaying equations in their reduced form.
-- Identifying the equation's degree.
-- Showing the solution(s) and analyzing the discriminant's nature (positive, negative, or zero).
-
-This project is part of a series to strengthen mathematical skills for future applications.
-
-## :package: Installation
 
 Ensure you have Python 3.10 or newer. Download the latest version of Python from the official [Python website](https://www.python.org/downloads/).
 
@@ -46,7 +37,7 @@ Ensure you have Python 3.10 or newer. Download the latest version of Python from
     pip install -r requirements.txt
     ```
 
-## Usage
+## 🔍 Usage
 
 1. **Train the Model:**
 
@@ -97,7 +88,7 @@ Ensure you have Python 3.10 or newer. Download the latest version of Python from
       -g, --graph           Visualize prediction results with a graph.
     ```
 
-## Examples
+## 🚀 Examples
 
 ### Training the Model
 
@@ -131,7 +122,7 @@ Standard Deviation Y (σy): 1291.8688873961714
 
 Example graph output:
 
-<img src="/gitimages/graph_training_output.png" alt="Graph Training Output" width="80%">
+<img src="/gitimages/graph_training_output.png" alt="Graph Training Output" width="60%">
 
 ### Using the Model for Prediction
 
@@ -184,6 +175,6 @@ PREDICTION → Estimated price for mileage of 170000km: 4853.28€.
 
 Example graph output:
 
-<img src="/gitimages/graph_predict_output.png" alt="Graph Predict Output" width="80%">
+<img src="/gitimages/graph_predict_output.png" alt="Graph Predict Output" width="60%">
 
 
