@@ -4,7 +4,7 @@
 
 ## 📄 Overview
 
-The goal of this project is to introduce basic machine learning concepts. You’ll create a program to predict car prices using a simple linear regression model trained with a gradient descent algorithm. The project focuses on a specific example—predicting car price based on mileage—but once complete, you can apply the model to any similar dataset.
+The goal of this project is to introduce basic machine learning concepts. I created a program to predict car prices using a simple linear regression model trained with a gradient descent algorithm. The project focuses on a specific example—predicting car price based on mileage—but once complete, you can apply the model to any similar dataset.
 
 You’ll build two programs. The first will predict car prices: it prompts you for a mileage value, then returns the estimated price for that mileage. The second program trains the model by reading a dataset and applying linear regression to adjust the model for accurate predictions.
 
