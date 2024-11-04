@@ -1,6 +1,6 @@
 # Ft Linear Regression
 
-<img src="/gitimages/miniature.png" alt="Project Overview" width="100%">
+<img src="./gitimages/miniature.png" alt="Project Overview" width="100%">
 
 ## 📄 Overview
 
@@ -123,7 +123,7 @@ Standard Deviation Y (σy): 1291.8688873961714
 
 Example graph output:
 
-<img src="/gitimages/graph_training_output.png" alt="Graph Training Output" width="100%">
+<img src="./gitimages/graph_training_output.png" alt="Graph Training Output" width="100%">
 
 ### Using the Model for Prediction
 
@@ -177,6 +177,6 @@ PREDICTION → Estimated price for mileage of 170000km: 4853.28€.
 
 Example graph output:
 
-<img src="/gitimages/graph_predict_output.png" alt="Graph Predict Output" width="100%">
+<img src="./gitimages/graph_predict_output.png" alt="Graph Predict Output" width="100%">
 
 
