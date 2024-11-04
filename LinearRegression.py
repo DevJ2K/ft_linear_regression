@@ -154,6 +154,7 @@ class LinearRegression:
 
 
 	def __init_data(self, config_file: str):
+		# Configs file
 		with open(os.path.join(self.DATAS_PATH, "configs", config_file)) as json_file:
 			self.file_info = json.load(json_file)
 			self.file_info['filename'] = config_file
@@ -162,6 +163,7 @@ class LinearRegression:
 		x_type = eval(self.file_info['x_type'])
 		y_type = eval(self.file_info['y_type'])
 
+		# Data set store in ./datas/sets/
 		with open(os.path.join(self.DATAS_PATH, "sets", file)) as csvfile:
 			reader = csv.DictReader(csvfile)
 			self.data = np.array([(x_type(row[reader.fieldnames[0]]), y_type(row[reader.fieldnames[1]])) for row in reader])
@@ -178,7 +180,10 @@ class LinearRegression:
 			animate: bool = False
 			):
 		if (iterations <= 0):
-			print("Iterations cannot be minus or equal 0")
+			print(f"{BHRED}ERROR: {RED}Iterations cannot be minus or equal 0.{RESET}")
+			return
+		if (learningRate <= 0):
+			print(f"{BHRED}ERROR: {RED}Learning rate cannot be minus or equal 0.{RESET}")
 			return
 		try:
 			self.__init_data(config_file=config_file)

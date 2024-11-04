@@ -1,14 +1,14 @@
 {
     "config_file": "data.json",
-    "coef_determination": 0.7329747078314375,
-    "iterations": 1500,
+    "coef_determination": 0.7329747078314965,
+    "iterations": 5000,
     "learning_rate": 0.01,
     "theta": [
         [
-            -0.8561391779414624
+            -0.8561394207904967
         ],
         [
-            2.382353573674815e-16
+            2.4360143531983536e-16
         ]
     ],
     "mean_x": 101066.25,
